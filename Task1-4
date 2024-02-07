@@ -1,0 +1,172 @@
+using System;
+using System.Collections.Generic;
+
+class ChessMoves
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Enter the position of the knight (e.g., e4):");
+        string position = Console.ReadLine();
+        int row, col;
+        ParsePosition(position, out row, out col);
+
+        Console.WriteLine("Knight's moves:");
+        MoveKnight(row, col);
+
+        Console.WriteLine("\nQueen's moves:");
+        ShowQueenMoves(row, col);
+
+        Console.WriteLine("\nRandomly placed queens on the chessboard:");
+        int[,] chessboard = GenerateRandomQueens();
+        DisplayChessboard(chessboard);
+    }
+
+    static void ParsePosition(string position, out int row, out int col)
+    {
+        col = position[0] - 'a';
+        row = 8 - (position[1] - '0');
+    }
+
+    static void MoveKnight(int row, int col)
+    {
+        int[,] matrix = new int[8, 8];
+
+        int[] dr = { -2, -2, -1, -1, 1, 1, 2, 2 };
+        int[] dc = { -1, 1, -2, 2, -2, 2, -1, 1 };
+
+        List<(int, int)> validMoves = new List<(int, int)>();
+
+        for (int i = 0; i < 8; i++)
+        {
+            int newRow = row + dr[i];
+            int newCol = col + dc[i];
+
+            if (newRow >= 0 && newRow < 8 && newCol >= 0 && newCol < 8)
+            {
+                validMoves.Add((newRow, newCol));
+            }
+        }
+
+        if (validMoves.Count > 0)
+        {
+            Random rand = new Random();
+            var randomMove = validMoves[rand.Next(validMoves.Count)];
+            matrix[randomMove.Item1, randomMove.Item2] = 1;
+        }
+
+        DisplayMatrix(matrix);
+    }
+
+    static void ShowQueenMoves(int row, int col)
+    {
+        int[,] matrix = new int[8, 8];
+
+        for (int i = 0; i < 8; i++)
+        {
+            matrix[i, col] = 1;
+            matrix[row, i] = 1;
+        }
+
+        int r = row, c = col;
+        while (r > 0 && c > 0)
+        {
+            r--;
+            c--;
+            matrix[r, c] = 1;
+        }
+
+        r = row; c = col;
+        while (r < 7 && c < 7)
+        {
+            r++;
+            c++;
+            matrix[r, c] = 1;
+        }
+
+        r = row; c = col;
+        while (r > 0 && c < 7)
+        {
+            r--;
+            c++;
+            matrix[r, c] = 1;
+        }
+
+        r = row; c = col;
+        while (r < 7 && c > 0)
+        {
+            r++;
+            c--;
+            matrix[r, c] = 1;
+        }
+
+        DisplayMatrix(matrix);
+    }
+
+    static int[,] GenerateRandomQueens()
+    {
+        int[,] board = new int[8, 8];
+        Random rand = new Random();
+
+        int queensPlaced = 0;
+        while (queensPlaced < 8)
+        {
+            int row = rand.Next(0, 8);
+            int col = rand.Next(0, 8);
+
+            if (IsValidPlacement(board, row, col))
+            {
+                board[row, col] = 1;
+                queensPlaced++;
+            }
+        }
+
+        return board;
+    }
+
+    static bool IsValidPlacement(int[,] board, int row, int col)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            if (board[row, i] == 1 || board[i, col] == 1)
+                return false;
+        }
+
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--)
+        {
+            if (board[i, j] == 1)
+                return false;
+        }
+
+        for (int i = row, j = col; i < 8 && j >= 0; i++, j--)
+        {
+            if (board[i, j] == 1)
+                return false;
+        }
+
+        return true;
+    }
+
+    static void DisplayMatrix(int[,] matrix)
+    {
+        for (int i = 0; i < matrix.GetLength(0); i++)
+        {
+            for (int j = 0; j < matrix.GetLength(1); j++)
+            {
+                Console.Write(matrix[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+
+    static void DisplayChessboard(int[,] board)
+    {
+        for (int i = 0; i < 8; i++)
+        {
+            for (int j = 0; j < 8; j++)
+            {
+                Console.Write(board[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
