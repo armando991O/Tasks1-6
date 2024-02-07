@@ -1,0 +1,160 @@
+using System;
+
+class SaddlePointFinderAndRandomMatrixGenerator
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("1. Find Saddle Point");
+        Console.WriteLine("2. Generate Random Matrix");
+        Console.WriteLine("Enter your choice:");
+
+        int choice = int.Parse(Console.ReadLine());
+
+        switch (choice)
+        {
+            case 1:
+                FindSaddlePoint();
+                break;
+            case 2:
+                GenerateRandomMatrix();
+                break;
+            default:
+                Console.WriteLine("Invalid choice.");
+                break;
+        }
+    }
+
+    static void FindSaddlePoint()
+    {
+        Console.WriteLine("Enter the number of rows in the matrix:");
+        int m = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter the number of columns in the matrix:");
+        int n = int.Parse(Console.ReadLine());
+
+        int[,] matrix = new int[m, n];
+
+        Console.WriteLine("Enter the elements of the matrix:");
+
+        for (int i = 0; i < m; i++)
+        {
+            string[] rowValues = Console.ReadLine().Split(' ');
+            for (int j = 0; j < n; j++)
+            {
+                matrix[i, j] = int.Parse(rowValues[j]);
+            }
+        }
+
+        FindSaddlePoint(matrix);
+    }
+
+    static void GenerateRandomMatrix()
+    {
+        Console.WriteLine("Enter the number of rows in the matrix:");
+        int m = int.Parse(Console.ReadLine());
+
+        Console.WriteLine("Enter the number of columns in the matrix:");
+        int n = int.Parse(Console.ReadLine());
+
+        int[,] matrix = GenerateRandomMatrix(m, n);
+
+        DisplayMatrix(matrix);
+    }
+
+    static void FindSaddlePoint(int[,] matrix)
+    {
+        int m = matrix.GetLength(0);
+        int n = matrix.GetLength(1);
+
+        for (int i = 0; i < m; i++)
+        {
+            int maxInRow = int.MinValue;
+            int minRowIndex = -1;
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[i, j] > maxInRow)
+                {
+                    maxInRow = matrix[i, j];
+                    minRowIndex = j;
+                }
+            }
+
+            bool isSaddlePoint = true;
+            for (int k = 0; k < m; k++)
+            {
+                if (matrix[k, minRowIndex] < maxInRow)
+                {
+                    isSaddlePoint = false;
+                    break;
+                }
+            }
+
+            if (isSaddlePoint)
+            {
+                Console.WriteLine($"Saddle Point found at ({i}, {minRowIndex}): {maxInRow}");
+                return;
+            }
+        }
+
+        Console.WriteLine("No saddle point found.");
+    }
+
+    static int[,] GenerateRandomMatrix(int m, int n)
+    {
+        int[,] matrix = new int[m, n];
+        Random rand = new Random();
+
+        int maxValue = m * n;
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                int value;
+                do
+                {
+                    value = rand.Next(1, maxValue + 1);
+                } while (IsValueRepeated(matrix, value));
+
+                matrix[i, j] = value;
+            }
+        }
+
+        return matrix;
+    }
+
+    static bool IsValueRepeated(int[,] matrix, int value)
+    {
+        int m = matrix.GetLength(0);
+        int n = matrix.GetLength(1);
+
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                if (matrix[i, j] == value)
+                {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    static void DisplayMatrix(int[,] matrix)
+    {
+        int m = matrix.GetLength(0);
+        int n = matrix.GetLength(1);
+
+        Console.WriteLine("Generated Matrix:");
+        for (int i = 0; i < m; i++)
+        {
+            for (int j = 0; j < n; j++)
+            {
+                Console.Write(matrix[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
