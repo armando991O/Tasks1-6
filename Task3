@@ -1,0 +1,54 @@
+using System;
+
+class QueenPlacement {
+    static void Main(string[] args) {
+        int[,] board = new int[8, 8];
+        Random rand = new Random();
+
+        PlaceQueens(board, rand);
+
+        DisplayBoard(board);
+    }
+
+    static void PlaceQueens(int[,] board, Random rand) {
+        for (int col = 0; col < 8; col++) {
+            int row = rand.Next(8);
+            if (IsSafe(board, row, col)) {
+                board[row, col] = 1;
+            } else {
+                col--;
+            }
+        }
+    }
+
+    static bool IsSafe(int[,] board, int row, int col) {
+        for (int i = 0; i < col; i++) {
+            if (board[row, i] == 1) {
+                return false;
+            }
+        }
+
+        for (int i = row, j = col; i >= 0 && j >= 0; i--, j--) {
+            if (board[i, j] == 1) {
+                return false;
+            }
+        }
+
+        for (int i = row, j = col; j >= 0 && i < 8; i++, j--) {
+            if (board[i, j] == 1) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    static void DisplayBoard(int[,] board) {
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                Console.Write(board[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
+    }
+}
